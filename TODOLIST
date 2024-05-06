@@ -1,0 +1,91 @@
+/*CORRIGIR OS PREÇOS
+ADICIONAR BANNER COM LOJAS QUE TRABALHAMOS 
+
+ADICIONAR MENU DE LOGIN 
+    ACOPLAR ITEMS DA CADA PESSOA AO LOGIN
+
+CARREGAR NA ESTRELA AUMENTA O CONTADOR DA ESTRELA DE CADA PRODUTO
+CARREGAR EM AVALIAÇOES LEVA PARA AS AVALIAÇOES DO PRODUTO 
+REMOVER DESCRIÇÃO DO PRODUTO DA PAGINA DO PRODUTO
+CARREGAR EM COMPRAR AGORA LEVA PARA A PAGINA DO PRODUTO
+*/
+
+//develop auth and user management
+//develop login page
+//develop signup page
+//develop forgot password page
+//develop reset password page
+//develop user profile page
+
+//develop product page
+//develop search page
+//develop cart page
+//develop checkout page
+//develop email notifications
+//develop admin page
+//develop admin dashboard
+
+/*
+import type { NextAuthOptions } from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { User } from "@/types"; // Ensure this imports your extended User type
+
+export const options: NextAuthOptions = {
+  secret: process.env.AUTH_SECRET,
+  providers: [
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_Secret as string,
+      // Add any additional profile transformation here if needed
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID as string,
+      clientSecret: process.env.GOOGLE_SECRET as string,
+      // Add any additional profile transformation here if needed
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: {
+          label: "Username:",
+          type: "text",
+          placeholder: "your-cool-username",
+        },
+        password: {
+          label: "Password:",
+          type: "password",
+          placeholder: "your-awesome-password",
+        },
+      },
+      async authorize(credentials, req) {
+        // Your authorization logic here...
+        const user: User = { id: "42", name: "Dave", role: "admin" }; // Include role
+        if (
+          credentials &&
+          credentials.username === user.name &&
+          credentials.password === "nextauth"
+        ) {
+          return user;
+        }
+        return null;
+      },
+    }),
+  ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.role = user.role; // Safely assign role because it's now part of the User type
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user && token.role) {
+        session.user.role = token.role; // Safely assign role to the session's user object
+      }
+      return session;
+    },
+  },
+};
+*/
