@@ -1,6 +1,7 @@
 "use client";
 
 import { scrapeAndStoreProduct } from "@/lib/actions";
+import { signIn, useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 
 const isValidProductURL = (url: string) => {
@@ -22,11 +23,18 @@ const isValidProductURL = (url: string) => {
 };
 
 const Searchbar = () => {
+  const { data: session } = useSession();
   const [searchPrompt, setSearchPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!session) {
+      // Redireciona para a página de login, você pode também especificar uma URL de retorno após o login
+      signIn("credentials", { callbackUrl: "/after-login-page" });
+      return;
+    }
 
     const isValidLink = isValidProductURL(searchPrompt);
 

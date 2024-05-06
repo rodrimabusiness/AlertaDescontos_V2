@@ -1,9 +1,11 @@
-import Modal from "@/components/Modal";
-import PriceInfoCard from "@/components/PriceInfoCard";
-import ProductCard from "@/components/ProductCard";
+import { options } from "@/app/api/auth/[...nextauth]/options";
+import Modal from "@/app/components/Modal";
+import PriceInfoCard from "@/app/components/PriceInfoCard";
+import ProductCard from "@/app/components/ProductCard";
 import { getProductById, getSimilarProducts } from "@/lib/actions";
 import { formatNumber } from "@/lib/utils";
 import { Product } from "@/types";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";

@@ -1,12 +1,29 @@
 export type PriceHistoryItem = {
   price: number;
+  date: Date;
+};
+
+export type SubscriptionPlan = {
+  id: string;
+  name: string;
+  price: number;
+  features: string[];
+};
+
+export type UserSubscription = {
+  userId: string;
+  planId: string;
+  startDate: Date;
+  endDate: Date;
+  status: "ACTIVE" | "INACTIVE"; // Status of the subscription
 };
 
 export type User = {
   id: string;
   name: string;
   email?: string;
-  role: string; // Make sure this line is here
+  role: string;
+  subscriptions: UserSubscription[];
 };
 
 export type Product = {
@@ -17,7 +34,7 @@ export type Product = {
   title: string;
   currentPrice: number;
   recommendedPrice: number;
-  priceHistory: PriceHistoryItem[] | [];
+  priceHistory: PriceHistoryItem[];
   highestPrice: number;
   lowestPrice: number;
   averagePrice: number;
@@ -26,8 +43,8 @@ export type Product = {
   category: string;
   reviewsCount: number;
   stars: number;
-  isOutOfStock: Boolean;
-  users?: User[];
+  isOutOfStock: boolean;
+  users: User[];
 };
 
 export type NotificationType =

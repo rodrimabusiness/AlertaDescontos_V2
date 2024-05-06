@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
-import { options } from "../app/api/auth/[...nextauth]/options";
+import { options } from "../api/auth/[...nextauth]/options";
 
 // Array de ícones a serem exibidos na Navbar, com ícones de pesquisa, coração e usuário comentados
 const navIcons = [
@@ -13,7 +13,7 @@ const navIcons = [
 // Se o usuário não está logado, ele não pode ver as informações de perfil
 const Navbar = async () => {
   const session = await getServerSession(options);
-  
+
   return (
     <header className="w-full">
       <nav className="nav">
