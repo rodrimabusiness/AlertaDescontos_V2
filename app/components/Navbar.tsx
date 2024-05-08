@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { options } from "../api/auth/[...nextauth]/options";
+import { User } from "@/lib/models/product.model";
+//import UserForm from "./UserForm";
 
 // Array de ícones a serem exibidos na Navbar, com ícones de pesquisa, coração e usuário comentados
 const navIcons = [
@@ -35,7 +37,6 @@ const Navbar = async () => {
             /* Renderização condicional dos ícones: se o array tiver ícones, eles são renderizados */
             //este bloco de codigo permite fazer comandos consoante se ha sessao
           }
-
           {navIcons.map((icon) => (
             <Image
               key={icon.alt}
@@ -49,8 +50,10 @@ const Navbar = async () => {
           {session ? (
             <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
           ) : (
-            <Link href="/api/auth/signin">Login</Link>
+            <Link href="/api/auth/signin">Login</Link> // Updated to point to the custom sign-in page
           )}
+          /*
+          {/*/<UserForm />*/}
         </div>
       </nav>
     </header>

@@ -57,6 +57,7 @@ const SubscriptionPlan =
   mongoose.models.SubscriptionPlan ||
   mongoose.model("SubscriptionPlan", subscriptionPlanSchema);
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-const Product = mongoose.model("Product", productSchema);
+const Product =
+  mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export { SubscriptionPlan, User, Product };
