@@ -1,6 +1,12 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { PriceHistoryItem, Product } from "@/types";
 import * as cheerio from "cheerio";
 import { CheerioAPI } from "cheerio";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const Notification = {
   WELCOME: "WELCOME",
@@ -167,8 +173,10 @@ export function getSelectors(url: string) {
   if (hostname.includes("worten.pt")) {
     return {
       titleSelector: "div.product-header__title h1.title span",
-      fullPriceSelector_2: ".integer",
-      fullPriceSelector: ".decimal",
+      fullPriceSelector_2:
+        "#__nuxt > div > div > div:nth-child(2) > div:nth-child(11) > div > section > div > div > div.product-heading__buy-boxes > div.buy-box > div:nth-child(2) > div > div.product-price-info > span > span .integer",
+      fullPriceSelector:
+        "#__nuxt > div > div > div:nth-child(2) > div:nth-child(11) > div > section > div > div > div.product-heading__buy-boxes > div.buy-box > div:nth-child(2) > div > div.product-price-info > span > span .decimal",
       imageSelector: "img.product-gallery__slider-image[src]",
       outOfStockSelector:
         ".availability .out-of-stock, .availability .outOfStock",
