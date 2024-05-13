@@ -13,6 +13,7 @@
     "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
     "cheerio": "^1.0.0-rc.12",
+    "clsx": "^2.1.1",
     "https": "^1.0.0",
     "mongoose": "^7.5.3",
     "next": "^14.2.3",
@@ -21,7 +22,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-responsive-carousel": "^3.2.23",
-    "supports-color": "^8.1.1"
+    "supports-color": "^8.1.1",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "latest",
