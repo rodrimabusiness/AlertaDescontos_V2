@@ -29,7 +29,7 @@ export async function generateEmailBody(
       subject = `Bem-vindo ao seguimento de preços para ${shortenedTitle}`;
       body = `
         <div>
-          <h2>Bem-vindo ao AlertaDescontos 🚀</h2>
+          <h2>Bem-vindo ao Alerta Descontos 🚀</h2>
           <p>Agora está a seguir o preço de ${product.title}.</p>
           <p>Eis um exemplo de como irá receber atualizações:</p>
           <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
