@@ -7,7 +7,7 @@ import {
   getEmailNotifType,
 } from "@/lib/utils";
 import { connectToDB } from "@/lib/mongoose";
-import Product from "@/lib/models/product.model";
+import { Product } from "@/lib/models/product.model";
 import { scrapeAnyProduct } from "@/lib/scraper";
 import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 
