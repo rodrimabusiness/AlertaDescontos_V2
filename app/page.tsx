@@ -26,7 +26,7 @@ const Home = async () => {
 
             <h1 className="head-text">
               Abuse do Poder de
-              <span className="text-primary"> AlertaDescontos</span>
+              <span className="text-primary"> Alerta Descontos</span>
             </h1>
 
             <p className="mt-6">
