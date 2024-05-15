@@ -42,19 +42,22 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
     console.log("Fetching data from URL:", url);
     console.log("Using session ID:", session_id);
 
+    const startTime = Date.now();
+
     // Tentativa de obtenção da página
     const response = await axios.get(url, options);
+    const fetchDuration = Date.now() - startTime;
+    console.log(`Data fetched successfully in ${fetchDuration}ms`);
+
     if (!response || !response.data) {
       console.error("Failed to fetch data or no data in the response.");
       return null;
     }
 
-    console.log("Data fetched successfully:", response.data.slice(0, 100)); // Log primeiros 100 caracteres
-
+    const parseStartTime = Date.now();
     const $ = cheerio.load(response.data);
     const selectors = getSelectors(url);
 
-    // Extração de dados utilizando os seletores definidos
     const title = $(selectors.titleSelector).text().trim();
 
     const { currentPrice, recommendedPrice } = extractPrice(
@@ -87,6 +90,9 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
       highestPrice: currentPrice,
       averagePrice: currentPrice,
     };
+
+    const parseDuration = Date.now() - parseStartTime;
+    console.log(`Data parsed successfully in ${parseDuration}ms`);
 
     console.log("Product Data:", data);
     return data;
