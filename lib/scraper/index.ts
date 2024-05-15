@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import * as cheerio from "cheerio";
-import { CheerioAPI } from "cheerio";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
 
 export async function scrapeAnyProduct(url: string): Promise<any> {
@@ -15,22 +14,38 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
   const session_id = Math.floor(Math.random() * 1000000);
 
   const options = {
-    auth: {
-      username: `${username}-session-${session_id}`,
-      password,
+    proxy: {
+      host: "brd.superproxy.io",
+      port: port,
+      auth: {
+        username: `${username}-session-${session_id}`,
+        password: password,
+      },
     },
-    host: "brd.superproxy.io",
-    port,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+      "Accept-Language": "en-US,en;q=0.9",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+      Connection: "keep-alive",
+    },
     rejectUnauthorized: false, // Importante para evitar problemas com certificados
   };
 
   try {
+    console.log("Fetching data from URL:", url);
+    console.log("Using session ID:", session_id);
+
     // Tentativa de obtenção da página
     const response = await axios.get(url, options);
     if (!response || !response.data) {
       console.error("Failed to fetch data or no data in the response.");
       return null;
     }
+
+    console.log("Data fetched successfully:", response.data.slice(0, 100)); // Log primeiros 100 caracteres
+
     const $ = cheerio.load(response.data);
     const selectors = getSelectors(url);
 
@@ -70,9 +85,17 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
 
     console.log("Product Data:", data);
     return data;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
       console.error("Error during product scraping:", error.message);
+      if (error.response) {
+        console.error("Response status:", error.response.status);
+        console.error(
+          "Response headers:",
+          JSON.stringify(error.response.headers, null, 2)
+        );
+        console.error("Response data:", error.response.data);
+      }
     } else {
       console.error(
         "Error during product scraping: An unknown error occurred."
