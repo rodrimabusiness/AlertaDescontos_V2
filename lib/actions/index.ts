@@ -84,6 +84,26 @@ export async function getAllProducts() {
   }
 }
 
+export async function getSimilarProducts(productId: string) {
+  try {
+    await connectToDB();
+
+    const currentProduct = await Product.findById(productId);
+
+    if (!currentProduct) return null;
+
+    const similarProducts = await Product.find({
+      _id: { $ne: productId },
+    }).limit(3);
+
+    return similarProducts;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await disconnectFromDB();
+  }
+}
+
 export async function addUserEmailToProduct(
   productId: string,
   userEmail: string
