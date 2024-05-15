@@ -3,6 +3,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
+import https from "https";
 
 export async function scrapeAnyProduct(url: string): Promise<any> {
   if (!url) return null;
@@ -13,7 +14,12 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
   const port = 22225;
   const session_id = Math.floor(Math.random() * 1000000);
 
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+
   const options = {
+    httpsAgent: agent,
     proxy: {
       host: "brd.superproxy.io",
       port: port,
@@ -30,7 +36,6 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
       Connection: "keep-alive",
     },
-    rejectUnauthorized: false, // Importante para evitar problemas com certificados
   };
 
   try {
