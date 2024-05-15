@@ -1,7 +1,8 @@
 const express = require("express");
 const next = require("next");
+const cron = require("node-cron");
 const mongoose = require("mongoose");
-const Product = require("./lib/models/product.model");
+const { GET } = require("./app/api/cron/route"); // Import the cron job function
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -31,6 +32,19 @@ app.prepare().then(() => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch products" });
+    }
+  });
+
+  // Atualização periódica dos produtos
+  cron.schedule("* * * * *", async () => {
+    // Executa a cada minuto
+    console.log("Running scheduled task...");
+    try {
+      const request = {}; // Create a mock request object if needed
+      const response = await GET(request);
+      console.log("Scheduled task completed:", response);
+    } catch (error) {
+      console.error("Error running scheduled task:", error);
     }
   });
 
