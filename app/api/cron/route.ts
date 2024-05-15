@@ -5,7 +5,7 @@ import {
   getAveragePrice,
   getEmailNotifType,
 } from "@/lib/utils";
-import { connectToDB } from "@/lib/mongoose";
+import { connectToDB, disconnectFromDB } from "@/lib/mongoose";
 import { Product } from "@/lib/models/product.model";
 import { scrapeAnyProduct } from "@/lib/scraper";
 import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
@@ -24,8 +24,9 @@ export async function GET(request: Request) {
     const products = await Product.find({});
     console.log(`Fetched ${products.length} products.`);
 
-    if (!products || products.length === 0)
+    if (!products || products.length === 0) {
       throw new Error("No product fetched");
+    }
 
     const updatedProducts = await Promise.all(
       products.map(async (currentProduct) => {
@@ -91,5 +92,7 @@ export async function GET(request: Request) {
       message: `Failed to get all products: ${error.message}`,
       error: true,
     });
+  } finally {
+    await disconnectFromDB();
   }
 }
