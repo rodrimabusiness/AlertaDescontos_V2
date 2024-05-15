@@ -35,7 +35,10 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
       Accept:
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
       Connection: "keep-alive",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
     },
+    timeout: 10000, // Adicionando timeout de 10 segundos
   };
 
   try {
