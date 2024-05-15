@@ -47,12 +47,7 @@ const Navbar = async () => {
               className="object-contain"
             />
           ))}
-          {session ? (
-            <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
-          ) : (
-            <Link href="/api/auth/signin">Login</Link> // Updated to point to the custom sign-in page
-          )}
-          /*
+
           {/*/<UserForm />*/}
         </div>
       </nav>
@@ -61,3 +56,10 @@ const Navbar = async () => {
 };
 
 export default Navbar;
+/*
+{session ? (
+  <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
+) : (
+  <Link href="/api/auth/signin">Login</Link> // Updated to point to the custom sign-in page
+)}
+*/
