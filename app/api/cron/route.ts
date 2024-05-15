@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import {
   getLowestPrice,
   getHighestPrice,
@@ -11,71 +10,70 @@ import { Product } from "@/lib/models/product.model";
 import { scrapeAnyProduct } from "@/lib/scraper";
 import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 
-export const maxDuration = 300; // This function can run for a maximum of 300 seconds
+export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
-    connectToDB();
+    console.log("Connecting to database...");
+    await connectToDB();
+    console.log("Connected to database.");
 
+    console.log("Fetching products from database...");
     const products = await Product.find({});
+    console.log(`Fetched ${products.length} products.`);
 
-    if (!products) throw new Error("No product fetched");
+    if (!products || products.length === 0)
+      throw new Error("No product fetched");
 
-    // ======================== 1 SCRAPE LATEST PRODUCT DETAILS & UPDATE DB
     const updatedProducts = await Promise.all(
       products.map(async (currentProduct) => {
-        // Scrape product
+        console.log(`Scraping product: ${currentProduct.url}`);
         const scrapedProduct = await scrapeAnyProduct(currentProduct.url);
 
-        if (!scrapedProduct) return;
+        if (!scrapedProduct) {
+          console.warn(`Failed to scrape product: ${currentProduct.url}`);
+          return;
+        }
 
         const updatedPriceHistory = [
           ...currentProduct.priceHistory,
-          {
-            price: scrapedProduct.currentPrice,
-          },
+          { price: scrapedProduct.currentPrice },
         ];
 
         const product = {
           ...scrapedProduct,
           priceHistory: updatedPriceHistory,
-
           lowestPrice: getLowestPrice(updatedPriceHistory),
           highestPrice: getHighestPrice(updatedPriceHistory),
           averagePrice: getAveragePrice(updatedPriceHistory),
         };
 
-        // Update Products in DB
+        console.log(`Updating product in database: ${product.url}`);
         const updatedProduct = await Product.findOneAndUpdate(
-          {
-            url: product.url,
-          },
-          product
+          { url: product.url },
+          product,
+          { new: true }
         );
 
-        // ======================== 2 CHECK EACH PRODUCT'S STATUS & SEND EMAIL ACCORDINGLY
         const emailNotifType = getEmailNotifType(
           scrapedProduct,
           currentProduct
         );
-
         if (emailNotifType && updatedProduct.users.length > 0) {
           const productInfo = {
             title: updatedProduct.title,
             url: updatedProduct.url,
           };
-          // Construct emailContent
           const emailContent = await generateEmailBody(
             productInfo,
             emailNotifType
           );
-          // Get array of user emails
           const userEmails = updatedProduct.users.map(
             (user: any) => user.email
           );
-          // Send email notification
+          console.log(`Sending email to ${userEmails.length} users.`);
           await sendEmail(emailContent, userEmails);
         }
 
@@ -88,8 +86,10 @@ export async function GET(request: Request) {
       data: updatedProducts,
     });
   } catch (error: any) {
-    throw new Error(`Failed to get all products: ${error.message}`);
+    console.error(`Failed to get all products: ${error.message}`);
+    return NextResponse.json({
+      message: `Failed to get all products: ${error.message}`,
+      error: true,
+    });
   }
 }
-
-/* ta a funcionar */
