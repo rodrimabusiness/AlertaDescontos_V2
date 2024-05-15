@@ -14,7 +14,7 @@ const navIcons = [
 
 // Se o usuário não está logado, ele não pode ver as informações de perfil
 const Navbar = async () => {
-  //const session = await getServerSession(options);
+  const session = await getServerSession(options);
 
   return (
     <header className="w-full">
@@ -47,6 +47,12 @@ const Navbar = async () => {
               className="object-contain"
             />
           ))}
+          {session ? (
+            <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
+          ) : (
+            <Link href="/api/auth/signin">Login</Link> // Updated to point to the custom sign-in page
+          )}
+          /*
           {/*/<UserForm />*/}
         </div>
       </nav>
@@ -55,12 +61,3 @@ const Navbar = async () => {
 };
 
 export default Navbar;
-
-/*
-{session ? (
-            <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
-          ) : (
-            <Link href="/api/auth/signin">Login</Link> // Updated to point to the custom sign-in page
-          )}
-
-        */

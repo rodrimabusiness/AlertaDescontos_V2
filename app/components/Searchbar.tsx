@@ -29,13 +29,13 @@ const Searchbar = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* nao precisa de log in
+
     if (!session) {
       // Redireciona para a página de login, você pode também especificar uma URL de retorno após o login
       signIn("credentials", { callbackUrl: "/after-login-page" });
       return;
     }
-    */
+
     const isValidLink = isValidProductURL(searchPrompt);
 
     if (!isValidLink) {
