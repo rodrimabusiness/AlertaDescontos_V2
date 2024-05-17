@@ -1,12 +1,8 @@
 "use server";
 
-import axios from "axios-https-proxy-fix";
+import axios from "axios";
 import * as cheerio from "cheerio";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
-import https from "https";
-import promise from "bluebird";
-import { lookup } from "dns";
-const lookupAsync = promise.promisify(lookup);
 
 export async function scrapeAnyProduct(url: string): Promise<any> {
   if (!url) {
@@ -14,42 +10,26 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
     return null;
   }
 
-  const username = "brd-customer-hl_cd9904f9-zone-alertadescontos";
-  const password = "zhz6xcgyk15n";
-  const port = 22225;
   const user_agent =
     "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
-  const session_id = (1000000 * Math.random()) | 0;
-
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  });
-
-  const superProxyHost = await lookupAsync("brd.superproxy.io");
 
   const options = {
-    httpsAgent: agent,
-    proxy: {
-      host: superProxyHost,
-      port: port,
-      auth: {
-        username: `${username}-session-${session_id}`,
-        password: password,
-      },
-    },
     headers: {
       "User-Agent": user_agent,
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      Connection: "keep-alive",
     },
     timeout: 30000, // 30 segundos de timeout
   };
 
   try {
     console.log(`Fetching data from URL: ${url}`);
-    console.log(`Using session ID: ${session_id}`);
 
     const startTime = Date.now();
 
-    // Fazendo a requisição diretamente sem retries
+    // Fazendo a requisição sem proxy
     const response = await axios.get(url, options);
     const fetchDuration = Date.now() - startTime;
     console.log(`Data fetched successfully in ${fetchDuration}ms`);
