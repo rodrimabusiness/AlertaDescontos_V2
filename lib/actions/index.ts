@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { Product } from "../models/product.model";
-import { connectToDB } from "../mongoose";
+import { connectToDB, disconnectFromDB } from "../mongoose";
 import { scrapeAnyProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { User } from "@/types";
@@ -49,12 +49,14 @@ export async function scrapeAndStoreProduct(productUrl: string) {
     revalidatePath(`/products/${newProduct._id}`);
   } catch (error: any) {
     throw new Error(`Failed to create/update product: ${error.message}`);
+  } finally {
+    await disconnectFromDB();
   }
 }
 
 export async function getProductById(productId: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const product = await Product.findOne({ _id: productId });
 
@@ -63,24 +65,28 @@ export async function getProductById(productId: string) {
     return product;
   } catch (error) {
     console.log(error);
+  } finally {
+    await disconnectFromDB();
   }
 }
 
 export async function getAllProducts() {
   try {
-    connectToDB();
+    await connectToDB();
 
     const products = await Product.find();
 
     return products;
   } catch (error) {
     console.log(error);
+  } finally {
+    await disconnectFromDB();
   }
 }
 
 export async function getSimilarProducts(productId: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const currentProduct = await Product.findById(productId);
 
@@ -93,6 +99,8 @@ export async function getSimilarProducts(productId: string) {
     return similarProducts;
   } catch (error) {
     console.log(error);
+  } finally {
+    await disconnectFromDB();
   }
 }
 
@@ -101,6 +109,8 @@ export async function addUserEmailToProduct(
   userEmail: string
 ) {
   try {
+    await connectToDB();
+
     const product = await Product.findById(productId);
 
     if (!product) return;
@@ -120,5 +130,7 @@ export async function addUserEmailToProduct(
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    await disconnectFromDB();
   }
 }

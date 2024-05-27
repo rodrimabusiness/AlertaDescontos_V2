@@ -11,7 +11,9 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "axios": "^1.5.1",
+    "axios-https-proxy-fix": "^0.17.1",
     "bcrypt": "^5.1.1",
+    "bluebird": "^3.7.2",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
     "https": "^1.0.0",
@@ -27,6 +29,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.42",
     "@types/node": "latest",
     "@types/nodemailer": "^6.4.11",
     "@types/react": "latest",
