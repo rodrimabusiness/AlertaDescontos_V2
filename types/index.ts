@@ -27,6 +27,7 @@ export type User = {
 };
 
 export type Product = {
+  [x: string]: any;
   _id?: string;
   url: string;
   currency: string;

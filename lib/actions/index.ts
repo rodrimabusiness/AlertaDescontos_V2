@@ -21,8 +21,8 @@ export async function scrapeAndStoreProduct(productUrl: string) {
 
     let productData = {
       ...scrapedProduct,
-      image: scrapedProduct.images[0],
-      recommendedPrice: scrapedProduct.recommendedPrice, // Inclua essa linha
+      image: scrapedProduct.image,
+      recommendedPrice: scrapedProduct.recommendedPrice,
     };
 
     if (existingProduct) {

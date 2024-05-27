@@ -23,7 +23,7 @@ const isValidProductURL = (url: string) => {
 };
 
 const Searchbar = () => {
-  const { data: session } = useSession();
+  //  const { data: session } = useSession();
   const [searchPrompt, setSearchPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

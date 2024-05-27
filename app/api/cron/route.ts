@@ -33,12 +33,12 @@ export async function GET(request: Request) {
 
         if (!scrapedProduct) {
           console.warn(`Failed to scrape product: ${currentProduct.url}`);
-          return;
+          return currentProduct; // Return currentProduct if scraping fails
         }
 
         const updatedPriceHistory = [
           ...currentProduct.priceHistory,
-          { price: scrapedProduct.currentPrice },
+          { price: scrapedProduct.currentPrice, date: new Date() },
         ];
 
         const product = {
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     throw new Error(`Failed to get all products: ${error.message}`);
+  } finally {
+    await disconnectFromDB();
   }
 }
-
-/* ta a funcionar */
