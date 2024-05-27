@@ -9,6 +9,7 @@ export async function scrapeWithPuppeteer(
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: process.env.CHROME_PATH || "/usr/bin/google-chrome-stable",
   });
 
   const page = await browser.newPage();
@@ -27,27 +28,33 @@ export async function scrapeWithPuppeteer(
     const $ = cheerio.load(html);
     const selectors = getSelectors(url);
 
+    // Extração do título
     const title =
       $(selectors.titleSelector).text().trim() || "Título não disponível";
 
+    // Extração dos preços
     const { currentPrice, recommendedPrice } = extractPrice(
       $,
       selectors.fullPriceSelector_2,
       selectors.fullPriceSelector
     );
 
+    // Extração das imagens
     const images = $(selectors.imageSelector)
       .map((_, el) => $(el).attr("src"))
       .get()
       .filter((src) => src && src.trim().length > 0);
     const image = images.length > 0 ? images[0] : "";
 
+    // Verificação de disponibilidade
     const outOfStock =
       $(selectors.outOfStockSelector).text().trim().toLowerCase() ===
       "currently unavailable";
 
+    // Extração da moeda
     const currency = extractCurrency($(selectors.currencySelector));
 
+    // Montagem do objeto de dados do produto
     const data: Product = {
       url,
       title,
