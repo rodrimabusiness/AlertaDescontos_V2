@@ -1,32 +1,38 @@
+import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { Product } from "@/types";
 
 export async function scrapeWithPuppeteer(
   url: string
 ): Promise<Product | null> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    channel: "chrome", // Adiciona o canal do Chrome
-  });
-
-  const page = await browser.newPage();
+  chromium.setHeadlessMode = true;
+  chromium.setGraphicsMode = false;
 
   try {
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath:
+        process.env.CHROME_EXECUTABLE_PATH ||
+        (await chromium.executablePath(
+          "/var/task/node_modules/@sparticuz/chromium/bin"
+        )),
+    });
+
+    const page = await browser.newPage();
+
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3"
     );
+
     await page.goto(url, { waitUntil: "networkidle2" });
 
-    // Extração de dados usando Puppeteer
     const data = await page.evaluate(() => {
-      // Título do produto
       const titleElement = document.querySelector(".product-name");
       const title = titleElement
         ? titleElement.textContent?.trim() || "Título não disponível"
         : "Título não disponível";
 
-      // Preços
       const priceIntegerElements = document.querySelectorAll(".integer");
       const priceDecimalElements = document.querySelectorAll(".decimal");
 
@@ -43,14 +49,12 @@ export async function scrapeWithPuppeteer(
             )
           : 0;
 
-      // Imagens
       const imageElements = document.querySelectorAll(".product-image img");
       const images = Array.from(imageElements).map(
         (img) => (img as HTMLImageElement).src
       );
       const image = images.length > 0 ? images[0] : "";
 
-      // Disponibilidade
       const outOfStockElement = document.querySelector(".out-of-stock");
       const outOfStock = outOfStockElement
         ? outOfStockElement.textContent
@@ -84,7 +88,6 @@ export async function scrapeWithPuppeteer(
     return data;
   } catch (error) {
     console.error("Error during product scraping with Puppeteer:", error);
-    await browser.close();
     return null;
   }
 }

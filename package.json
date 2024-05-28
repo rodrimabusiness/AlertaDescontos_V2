@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
+    "@sparticuz/chromium": "^113.0.1",
     "axios": "^1.5.1",
     "axios-https-proxy-fix": "^0.17.1",
     "bcrypt": "^5.1.1",
@@ -23,7 +24,7 @@
     "next": "^14.2.3",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.5",
-    "puppeteer": "^22.10.0",
+    "puppeteer-core": "^20.9.0",
     "react": "latest",
     "react-dom": "latest",
     "react-responsive-carousel": "^3.2.23",
