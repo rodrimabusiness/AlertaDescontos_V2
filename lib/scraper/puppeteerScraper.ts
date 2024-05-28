@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import { Product } from "@/types";
 
 export async function scrapeWithPuppeteer(
