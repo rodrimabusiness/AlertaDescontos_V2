@@ -7,6 +7,7 @@ export async function scrapeWithPuppeteer(
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    channel: "chrome", // Adiciona o canal do Chrome
   });
 
   const page = await browser.newPage();
