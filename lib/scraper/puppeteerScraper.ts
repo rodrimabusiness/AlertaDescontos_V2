@@ -6,8 +6,9 @@ export async function scrapeWithPuppeteer(
 ): Promise<Product | null> {
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath:
+      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    executablePath: process.env.CHROME_PATH || undefined, // Adicione esta linha
   });
 
   const page = await browser.newPage();
@@ -18,25 +19,14 @@ export async function scrapeWithPuppeteer(
     );
     await page.goto(url, { waitUntil: "networkidle2" });
 
-    // Extração de dados usando Puppeteer
-    console.log("Scraping with Puppeteer...");
     const data = await page.evaluate(() => {
-      console.log("Scraping with Puppeteer...2");
-
-      // Título do produto\
       const titleElement = document.querySelector(".product-name");
-      console.log("Title Element:", titleElement);
       const title = titleElement
         ? titleElement.textContent?.trim() || "Título não disponível"
         : "Título não disponível";
-      console.log("Title:", title);
 
-      // Preços
       const priceIntegerElements = document.querySelectorAll(".integer");
       const priceDecimalElements = document.querySelectorAll(".decimal");
-
-      console.log("Price Integer Elements:", priceIntegerElements);
-      console.log("Price Decimal Elements:", priceDecimalElements);
 
       const currentPrice =
         priceIntegerElements.length > 0 && priceDecimalElements.length > 0
@@ -50,28 +40,19 @@ export async function scrapeWithPuppeteer(
               `${priceIntegerElements[1].textContent}.${priceDecimalElements[1].textContent}`
             )
           : 0;
-      console.log("Current Price:", currentPrice);
-      console.log("Recommended Price:", recommendedPrice);
 
-      // Imagens
       const imageElements = document.querySelectorAll(".product-image img");
-      console.log("Image Elements:", imageElements);
       const images = Array.from(imageElements).map(
         (img) => (img as HTMLImageElement).src
       );
-      console.log("Images Array:", images);
       const image = images.length > 0 ? images[0] : "";
-      console.log("Main Image:", image);
 
-      // Disponibilidade
       const outOfStockElement = document.querySelector(".out-of-stock");
-      console.log("Out of Stock Element:", outOfStockElement);
       const outOfStock = outOfStockElement
         ? outOfStockElement.textContent
             ?.toLowerCase()
             .includes("indisponível") || false
         : false;
-      console.log("Out of Stock:", outOfStock);
 
       return {
         url: window.location.href,

@@ -1,13 +1,13 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
-[build.environment]
-  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+[context.production]
+  environment = { CHROME_PATH = "/usr/bin/google-chrome-stable" }
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[context.production.environment]
-  CHROME_BIN = "/usr/bin/google-chrome-stable"
-  CHROME_PATH = "/usr/bin/google-chrome-stable"
+[build.environment]
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+  PUPPETEER_EXECUTABLE_PATH = "/usr/bin/google-chrome-stable"
