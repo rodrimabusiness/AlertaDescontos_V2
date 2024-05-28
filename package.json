@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "preinstall": "apt-get update && apt-get install -y google-chrome-stable",
+    "preinstall": "npx puppeteer install",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

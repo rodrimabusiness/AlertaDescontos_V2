@@ -6,8 +6,6 @@ export async function scrapeWithPuppeteer(
 ): Promise<Product | null> {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath:
-      process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
@@ -19,12 +17,15 @@ export async function scrapeWithPuppeteer(
     );
     await page.goto(url, { waitUntil: "networkidle2" });
 
+    // Extração de dados usando Puppeteer
     const data = await page.evaluate(() => {
+      // Título do produto
       const titleElement = document.querySelector(".product-name");
       const title = titleElement
         ? titleElement.textContent?.trim() || "Título não disponível"
         : "Título não disponível";
 
+      // Preços
       const priceIntegerElements = document.querySelectorAll(".integer");
       const priceDecimalElements = document.querySelectorAll(".decimal");
 
@@ -41,12 +42,14 @@ export async function scrapeWithPuppeteer(
             )
           : 0;
 
+      // Imagens
       const imageElements = document.querySelectorAll(".product-image img");
       const images = Array.from(imageElements).map(
         (img) => (img as HTMLImageElement).src
       );
       const image = images.length > 0 ? images[0] : "";
 
+      // Disponibilidade
       const outOfStockElement = document.querySelector(".out-of-stock");
       const outOfStock = outOfStockElement
         ? outOfStockElement.textContent
@@ -75,8 +78,6 @@ export async function scrapeWithPuppeteer(
         isOutOfStock: outOfStock,
       };
     });
-
-    console.log("Product Data:", data);
 
     await browser.close();
     return data;

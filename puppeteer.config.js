@@ -1,3 +1,1 @@
-module.exports = {
-  executablePath: "/usr/bin/google-chrome-stable",
-};
+// @ts-check
