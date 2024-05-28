@@ -2,7 +2,6 @@
 const nextConfig = {
   images: {
     domains: ["m.media-amazon.com"],
-    // Add remotePatterns to include worten.pt
     remotePatterns: [
       {
         protocol: "https",
