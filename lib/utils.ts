@@ -70,7 +70,7 @@ export function extractPrice(
         }
       });
     });
-    console.log("Prices from all selectors:", prices); // Log all prices found
+    console.log("Prices from all selectors_:", prices); // Log all prices found
   }
 
   if (prices.length > 0) {
