@@ -7,10 +7,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.worten.pt",
         port: "",
-        pathname: "/**", // Adjust this pathname pattern according to your needs
+        pathname: "/**",
       },
     ],
   },
+  output: "export", // Utilize 'output: export' no lugar de 'next export'
 };
 
 module.exports = nextConfig;
