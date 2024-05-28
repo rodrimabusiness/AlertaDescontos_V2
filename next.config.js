@@ -2,15 +2,24 @@
 const nextConfig = {
   images: {
     domains: ["m.media-amazon.com"],
-    // Add remotePatterns to include worten.pt
     remotePatterns: [
       {
         protocol: "https",
         hostname: "www.worten.pt",
         port: "",
-        pathname: "/**", // Adjust this pathname pattern according to your needs
+        pathname: "/**",
       },
     ],
+  },
+  exportPathMap: async function (
+    defaultPathMap,
+    { dev, dir, outDir, distDir, buildId }
+  ) {
+    return {
+      "/": { page: "/" },
+      "/products/[id]": { page: "/products/[id]" },
+      // Add other pages here
+    };
   },
 };
 
