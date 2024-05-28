@@ -11,7 +11,7 @@ const nextConfig = {
       },
     ],
   },
-  exportPathMap: async function (
+  generateStaticParams  : async function (
     defaultPathMap,
     { dev, dir, outDir, distDir, buildId }
   ) {
