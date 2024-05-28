@@ -1,12 +1,10 @@
-# example netlify.toml
 [build]
-  command = "# no build command"
-  functions = "netlify/functions"
-  publish = "."
-
-[dev]
-  autoLaunch = false
+  command = "npm run build && npm run export"
+  publish = "out"  # Ensure this matches the directory where your static files are exported
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@sparticuz/chromium"]
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
