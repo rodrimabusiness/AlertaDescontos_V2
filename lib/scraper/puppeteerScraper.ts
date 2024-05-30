@@ -3,6 +3,7 @@ import puppeteer from "puppeteer-core";
 import { Product } from "@/types";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
 import * as cheerio from "cheerio";
+import { browser } from "process";
 
 export async function scrapeWithPuppeteer(
   url: string
@@ -10,6 +11,10 @@ export async function scrapeWithPuppeteer(
   try {
     console.log("Launching Puppeteer...");
 
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: process.env.SBR_WS_ENDPOINT,
+    });
+    /*
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
@@ -17,20 +22,22 @@ export async function scrapeWithPuppeteer(
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
-    console.log("Puppeteer launched successfully.");
+    console.log("Puppeteer launched successfully.");*/
 
     const page = await browser.newPage();
     console.log("New page created.");
 
+    /*
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3"
     );
     console.log("User-Agent set.");
-
+    */
     await page.goto(url, { waitUntil: "networkidle2" });
     console.log("Navigated to URL:", url);
 
     const html = await page.content();
+    console.log("HTML:", html);
     await browser.close();
 
     const $ = cheerio.load(html);
