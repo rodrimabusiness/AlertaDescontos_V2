@@ -1,5 +1,8 @@
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import { Product } from "@/types";
+import { extractCurrency, extractPrice, getSelectors } from "../utils";
+import * as cheerio from "cheerio";
 
 export async function scrapeWithPuppeteer(
   url: string
@@ -7,9 +10,17 @@ export async function scrapeWithPuppeteer(
   try {
     console.log("Launching Puppeteer...");
 
+    /*
+    const executablePath =
+      process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath());
+    console.log("Using Chrome executable path:", executablePath);
+    */
+
     const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      headless: true,
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
     console.log("Puppeteer launched successfully.");
 
@@ -23,93 +34,66 @@ export async function scrapeWithPuppeteer(
 
     await page.goto(url, { waitUntil: "networkidle2" });
     console.log("Navigated to URL:", url);
+    // Extraindo HTML da página carregada
+    const html = await page.content();
+    await browser.close();
 
-    // Espera pelos elementos especificamente
-    await page.waitForSelector(".product-name", { visible: true });
-    await page.waitForSelector(".product-image img", { visible: true });
-    console.log("Product name and image elements loaded.");
+    // Analisando o HTML com Cheerio
+    const $ = cheerio.load(html);
+    const selectors = getSelectors(url);
 
-    const data = await page.evaluate(() => {
-      const titleSelector = ".product-name";
-      const priceIntegerSelector = ".integer";
-      const priceDecimalSelector = ".decimal";
-      const imageSelector = ".product-image img";
-      const outOfStockSelector = ".out-of-stock";
+    const title =
+      $(selectors.titleSelector).text().trim() || "Título não disponível";
+    console.log("Title Selector:", selectors.titleSelector);
+    console.log("Extracted Title:", title);
 
-      const titleElement = document.querySelector(titleSelector);
-      const priceIntegerElements =
-        document.querySelectorAll(priceIntegerSelector);
-      const priceDecimalElements =
-        document.querySelectorAll(priceDecimalSelector);
-      const imageElements = document.querySelectorAll(imageSelector);
-      const outOfStockElement = document.querySelector(outOfStockSelector);
+    const { currentPrice, recommendedPrice } = extractPrice(
+      $,
+      selectors.fullPriceSelector_2,
+      selectors.fullPriceSelector
+    );
 
-      return {
-        title: titleElement?.textContent?.trim() || "Título não disponível",
-        currentPrice:
-          priceIntegerElements.length > 0 && priceDecimalElements.length > 0
-            ? parseFloat(
-                `${priceIntegerElements[0].textContent}.${priceDecimalElements[0].textContent}`
-              )
-            : 0,
-        recommendedPrice:
-          priceIntegerElements.length > 1 && priceDecimalElements.length > 1
-            ? parseFloat(
-                `${priceIntegerElements[1].textContent}.${priceDecimalElements[1].textContent}`
-              )
-            : 0,
-        image:
-          imageElements.length > 0
-            ? (imageElements[0] as HTMLImageElement).src
-            : "",
-        outOfStock: outOfStockElement
-          ? outOfStockElement.textContent
-              ?.toLowerCase()
-              .includes("indisponível") || false
-          : false,
-        elementsHtml: {
-          title: titleElement?.outerHTML || "",
-          priceInteger: priceIntegerElements[0]?.outerHTML || "",
-          priceDecimal: priceDecimalElements[0]?.outerHTML || "",
-          image: imageElements[0]?.outerHTML || "",
-          outOfStock: outOfStockElement?.outerHTML || "",
-        },
-      };
-    });
+    const images = $(selectors.imageSelector)
+      .map((_, el) => $(el).attr("src"))
+      .get()
+      .filter((src) => src && src.trim().length > 0);
+    const image = images.length > 0 ? images[0] : "";
+    console.log("Image Selector:", selectors.imageSelector);
+    console.log("Extracted Images:", images);
 
-    // Verificação dos elementos HTML no contexto Node.js
-    console.log("Title element HTML:", data.elementsHtml.title);
-    console.log("Price integer element HTML:", data.elementsHtml.priceInteger);
-    console.log("Price decimal element HTML:", data.elementsHtml.priceDecimal);
-    console.log("Image element HTML:", data.elementsHtml.image);
-    console.log("Out of stock element HTML:", data.elementsHtml.outOfStock);
+    const outOfStock =
+      $(selectors.outOfStockSelector).text().trim().toLowerCase() ===
+      "currently unavailable";
+    console.log("Out of Stock Selector:", selectors.outOfStockSelector);
+    console.log("Out of Stock Status:", outOfStock);
 
-    const productData: Product = {
+    const currency = extractCurrency($(selectors.currencySelector));
+    console.log("Currency Selector:", selectors.currencySelector);
+    console.log("Extracted Currency:", currency);
+
+    const data: Product = {
       url,
-      title: data.title,
-      currentPrice: data.currentPrice,
-      recommendedPrice: data.recommendedPrice,
-      image: data.image,
-      currency: "€",
-      outOfStock: data.outOfStock,
+      title,
+      currentPrice: currentPrice ?? 0,
+      recommendedPrice: recommendedPrice ?? 0,
+      image,
+      currency,
+      outOfStock,
       priceHistory: [],
-      lowestPrice: data.currentPrice,
-      highestPrice: data.currentPrice,
-      averagePrice: data.currentPrice,
+      lowestPrice: currentPrice ?? 0,
+      highestPrice: currentPrice ?? 0,
+      averagePrice: currentPrice ?? 0,
       discountRate: 0,
       description: "Descrição não disponível",
       category: "Categoria não disponível",
       reviewsCount: 0,
       stars: 0,
       users: [],
-      isOutOfStock: data.outOfStock,
+      isOutOfStock: outOfStock,
     };
 
-    await browser.close();
-    console.log("Browser closed.");
-    console.log("Data evaluated:", productData);
-
-    return productData;
+    console.log("Product Data:", data);
+    return data;
   } catch (error) {
     console.error("Error during product scraping with Puppeteer:", error);
     return null;
