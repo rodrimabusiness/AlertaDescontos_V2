@@ -10,19 +10,10 @@ export async function scrapeWithPuppeteer(
   try {
     console.log("Launching Puppeteer...");
 
-    /*
-    const executablePath =
-      process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath());
-    console.log("Using Chrome executable path:", executablePath);
-    */
-
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(
-        "/var/task/node_modules/@sparticuz/chromium/bin"
-      ),
-      headless: chromium.headless,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      headless: true,
     });
     console.log("Puppeteer launched successfully.");
 
@@ -36,11 +27,10 @@ export async function scrapeWithPuppeteer(
 
     await page.goto(url, { waitUntil: "networkidle2" });
     console.log("Navigated to URL:", url);
-    // Extraindo HTML da página carregada
+
     const html = await page.content();
     await browser.close();
 
-    // Analisando o HTML com Cheerio
     const $ = cheerio.load(html);
     const selectors = getSelectors(url);
 
