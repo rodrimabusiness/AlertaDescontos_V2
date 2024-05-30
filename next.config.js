@@ -2,16 +2,16 @@
 const nextConfig = {
   images: {
     domains: ["m.media-amazon.com"],
+    // Add remotePatterns to include worten.pt
     remotePatterns: [
       {
         protocol: "https",
         hostname: "www.worten.pt",
         port: "",
-        pathname: "/**",
+        pathname: "/**", // Adjust this pathname pattern according to your needs
       },
     ],
   },
-  output: "export", // Utilize 'output: export' no lugar de 'next export'
 };
 
 module.exports = nextConfig;

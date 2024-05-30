@@ -14,7 +14,7 @@ const navIcons = [
 
 // Se o usuário não está logado, ele não pode ver as informações de perfil
 const Navbar = async () => {
-  const session = await getServerSession(options);
+  //const session = await getServerSession(options);
 
   return (
     <header className="w-full">
