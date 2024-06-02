@@ -1,28 +1,27 @@
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
-import { Product } from "@/types";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
 import * as cheerio from "cheerio";
+import { Browser } from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import { Product } from "@/types";
 
 export async function scrapeWithPuppeteer(
   url: string
 ): Promise<Product | null> {
   try {
-    console.log("Launching Puppeteer...");
+    console.log("Launching Puppeteer with StealthPlugin...");
+    puppeteer.use(StealthPlugin());
 
-    const executablePath =
-      process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath());
-    console.log("Chromium executable path:", executablePath);
+    // Determine the executable path for Chromium, defaulting to Puppeteer's bundled Chromium
+    const executablePath = await chromium.executablePath();
 
-    if (!executablePath) {
-      throw new Error("Chromium executable path not found.");
-    }
-
-    const browser = await puppeteer.launch({
+    // Launch Puppeteer
+    const browser: Browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath,
-      headless: chromium.headless,
+      executablePath,
+      headless: true, // Set to true for serverless environments
       ignoreHTTPSErrors: true,
     });
 
@@ -40,7 +39,6 @@ export async function scrapeWithPuppeteer(
     console.log("Navigated to URL:", url);
 
     await page.screenshot({ path: "screenshot.png" });
-
     const html = await page.content();
     await browser.close();
 
