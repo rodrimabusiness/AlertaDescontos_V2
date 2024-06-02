@@ -11,11 +11,11 @@ export async function scrapeWithAxios(url: string): Promise<Product | null> {
     headers: {
       "User-Agent": user_agent,
       Accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,**;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
       Connection: "keep-alive",
     },
-    timeout: 30000, // 30 segundos de timeout
+    timeout: 60000, // 30 segundos de timeout
   };
 
   try {
