@@ -7,11 +7,19 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
     return null;
   }
 
+  console.log("Scraping URL:", url);
   const isWorten = url.includes("worten.pt");
 
-  if (isWorten) {
-    return await scrapeWithPuppeteer(url);
-  } else {
-    return await scrapeWithAxios(url);
+  try {
+    if (isWorten) {
+      console.log("Using Puppeteer for scraping...");
+      return await scrapeWithPuppeteer(url);
+    } else {
+      console.log("Using Axios for scraping...");
+      return await scrapeWithAxios(url);
+    }
+  } catch (error) {
+    console.error("Error in scrapeAnyProduct:", error);
+    return null;
   }
 }

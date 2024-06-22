@@ -14,6 +14,7 @@
     "@headlessui/react": "^1.7.17",
     "@luminati-io/luminati-proxy": "^1.456.660",
     "@sparticuz/chromium": "^123.0.1",
+    "@types/puppeteer": "^7.0.4",
     "axios": "^1.5.1",
     "axios-https-proxy-fix": "^0.17.1",
     "bcrypt": "^5.1.1",
