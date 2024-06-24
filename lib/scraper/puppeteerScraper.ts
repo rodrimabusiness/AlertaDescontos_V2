@@ -18,10 +18,16 @@ const navigateWithRetry = async (
     // CAPTCHA handling: To check the status of Scraping Browser's automatic CAPTCHA solver on the target page
     const client = await page.createCDPSession();
     console.log("Waiting for CAPTCHA to solve...");
-    const { status } = await client.send("Captcha.waitForSolve", {
+    const response = (await client.send("Captcha.waitForSolve", {
       detectTimeout: 10000,
-    });
-    console.log("CAPTCHA solve status:", status);
+    })) as { status?: string };
+
+    const status = response.status;
+    if (status) {
+      console.log("CAPTCHA solve status:", status);
+    } else {
+      console.log("CAPTCHA solve status not found in the response");
+    }
   } catch (error) {
     if (retries === 0)
       throw new Error(`Navigate to ${url} failed after several retries`);
