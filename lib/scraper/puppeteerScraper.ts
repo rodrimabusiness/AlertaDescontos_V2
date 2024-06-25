@@ -4,7 +4,10 @@ import { Product } from "@/types";
 import fs from "fs";
 import * as cheerio from "cheerio";
 
-const SBR_WS_ENDPOINT = process.env.SBR_WS_ENDPOINT;
+// Constants
+const TIMEOUT = 2 * 60 * 1000;
+const CAPTCHA_DETECT_TIMEOUT = 5000;
+const NAVIGATION_TIMEOUT = 30000;
 
 const navigateWithRetry = async (
   page: Page,
@@ -13,13 +16,16 @@ const navigateWithRetry = async (
   delay = 500
 ): Promise<void> => {
   try {
-    await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
+    await page.goto(url, {
+      waitUntil: "networkidle0",
+      timeout: NAVIGATION_TIMEOUT,
+    });
 
     // CAPTCHA handling: To check the status of Scraping Browser's automatic CAPTCHA solver on the target page
     const client = await page.createCDPSession();
     console.log("Waiting for CAPTCHA to solve...");
     const response = (await client.send("Captcha.waitForSolve" as any, {
-      detectTimeout: 10000,
+      detectTimeout: CAPTCHA_DETECT_TIMEOUT,
     })) as { status?: string };
 
     const status = response.status;
@@ -91,7 +97,7 @@ const extractFromJSONLD = async (page: Page) => {
 const scrapeWithSelectors = async (page: Page, url: string) => {
   const html = await page.content();
   console.log("Page content retrieved");
-  //screenshot the page and have the name with the timestamp of the scraping process
+  // Screenshot the page and save it with a timestamp
   await page.screenshot({ path: `screenshot-${Date.now()}.png` });
 
   const $ = cheerio.load(html);
@@ -149,27 +155,32 @@ const scrapeWithSelectors = async (page: Page, url: string) => {
 export async function scrapeWithPuppeteer(
   url: string
 ): Promise<Product | null> {
-  console.log(`Scraping URL: ${url}`);
-  console.log("Connecting to Scraping Browser...");
-  console.log("WebSocket Endpoint:", SBR_WS_ENDPOINT);
-
   let browser: Browser | null = null;
   try {
-    if (!SBR_WS_ENDPOINT) {
-      throw new Error(
-        "SBR_WS_ENDPOINT is not defined in environment variables"
-      );
-    }
-
     browser = await puppeteer.connect({
-      browserWSEndpoint: SBR_WS_ENDPOINT,
+      browserWSEndpoint: process.env.SBR_WS_ENDPOINT,
     });
-    console.log("Connected to Scraping Browser");
-
     const page = await browser.newPage();
-    console.log("New page created.");
+    const client = await page.createCDPSession();
+    page.setDefaultNavigationTimeout(TIMEOUT);
 
-    await navigateWithRetry(page, url);
+    // Navigate to the URL
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    console.log("Navigated to URL");
+
+    console.log("Waiting for CAPTCHA to solve...");
+    const { status } = (await client.send("Captcha.waitForSolve" as any, {
+      detectTimeout: CAPTCHA_DETECT_TIMEOUT,
+    })) as { status?: string };
+    console.log("CAPTCHA solve status:", status);
+
+    // Take a screenshot
+    //await page.screenshot({ path: "screenshot.png" });
+
+    // Extract HTML content
+    const html = await page.content();
+    const $ = cheerio.load(html);
+    const selectors = getSelectors(url);
 
     // Attempt to extract from JSON-LD first
     const jsonLdData = await extractFromJSONLD(page);

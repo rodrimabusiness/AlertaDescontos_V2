@@ -13,6 +13,7 @@ const nextConfig = {
     ],
   },
   experimental: {
+    serverActions: true,
     serverComponentsExternalPackages: [
       "puppeteer",
       "puppeteer-extra",

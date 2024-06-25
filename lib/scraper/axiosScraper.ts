@@ -2,32 +2,28 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { extractCurrency, extractPrice, getSelectors } from "../utils";
 import { Product } from "@/types";
-
+import puppeteer, { Browser, Page } from "puppeteer-core";
 export async function scrapeWithAxios(url: string): Promise<Product | null> {
-  const user_agent =
-    "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
-
-  const options = {
-    headers: {
-      "User-Agent": user_agent,
-      Accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,**;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9",
-      Connection: "keep-alive",
-    },
-    timeout: 60000, // 30 segundos de timeout
-  };
-
   try {
-    console.log(`Fetching data from URL: ${url}`);
-    const response = await axios.get(url, options);
-
-    if (!response || !response.data) {
-      console.error("Failed to fetch data or no data in the response.");
-      return null;
-    }
-
-    const $ = cheerio.load(response.data);
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: process.env.SBR_WS_ENDPOINT,
+    });
+    const page = await browser.newPage();
+    const client = await page.createCDPSession();
+    page.setDefaultNavigationTimeout(2 * 60 * 1000);
+    // Go to Amazon.com
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    console.log("Navigated to home page");
+    console.log("Waiting captcha to solve...");
+    const { status } = (await client.send("Captcha.waitForSolve" as any, {
+      detectTimeout: 10000,
+    })) as { status?: string };
+    console.log("Captcha solve status:", status);
+    //take screenshot
+    //await page.screenshot({ path: "screenshot.png" });
+    const html = await page.content();
+    console.log("html:", html);
+    const $ = cheerio.load(html);
     const selectors = getSelectors(url);
 
     const title = $(selectors.titleSelector).text().trim();
