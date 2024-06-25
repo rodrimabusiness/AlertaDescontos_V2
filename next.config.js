@@ -2,24 +2,41 @@
 const nextConfig = {
   images: {
     domains: ["m.media-amazon.com"],
-    // Add remotePatterns to include worten.pt
     remotePatterns: [
       {
         protocol: "https",
         hostname: "www.worten.pt",
         port: "",
-        pathname: "/**", // Adjust this pathname pattern according to your needs
+        pathname: "/**",
       },
     ],
   },
   experimental: {
-    serverActions: true,
     serverComponentsExternalPackages: [
       "puppeteer",
       "puppeteer-extra",
       "puppeteer-extra-plugin-stealth",
     ],
     serverMinification: false, // required by DEFER platform
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push("puppeteer-core");
+    }
+    return config;
+  },
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "x-vercel-function-max-duration",
+            value: "60",
+          },
+        ],
+      },
+    ];
   },
 };
 
