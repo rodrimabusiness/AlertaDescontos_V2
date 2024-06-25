@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scrapeWithPuppeteer } from "@/lib/scraper/puppeteerScraper";
 
-export const config = {
-  runtime: "edge",
-};
-
 export async function POST(req: NextRequest) {
   try {
     const { url } = await req.json();
