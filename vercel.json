@@ -1,9 +1,6 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*": {
-      "maxDuration": 60
-    },
     "lib/**/*": {
       "maxDuration": 60
     }
