@@ -1,18 +1,7 @@
 {
-  "version": 2,
   "functions": {
-    "lib/**/*": {
+    "app/api/**/*": {
       "maxDuration": 60
     }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/lib/(.*)",
-      "dest": "/lib/$1"
-    }
-  ]
+  }
 }
