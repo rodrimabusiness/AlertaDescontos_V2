@@ -1,6 +1,7 @@
 {
+  "version": 2,
   "functions": {
-    "app/api/**/*": {
+    "lib/scraper/*.ts": {
       "maxDuration": 60
     }
   }
