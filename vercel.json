@@ -1,7 +1,10 @@
 {
   "version": 2,
   "functions": {
-    "lib/scraper/*.ts": {
+    "app/api/scrapeWithPuppeteer/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/scrapeWithAxios/route.ts": {
       "maxDuration": 60
     }
   }

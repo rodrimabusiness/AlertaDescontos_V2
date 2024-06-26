@@ -1,6 +1,3 @@
-import { scrapeWithPuppeteer } from "./puppeteerScraper";
-import { scrapeWithAxios } from "./axiosScraper";
-
 export async function scrapeAnyProduct(url: string): Promise<any> {
   if (!url) {
     console.error("URL is not provided");
@@ -11,12 +8,21 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
   const isWorten = url.includes("worten.pt");
 
   try {
+    let apiUrl;
     if (isWorten) {
-      console.log("Using Puppeteer for scraping...");
-      return await scrapeWithPuppeteer(url);
+      apiUrl = `/api/scrapeWithPuppeteer?url=${encodeURIComponent(url)}`;
     } else {
-      console.log("Using Axios for scraping...");
-      return await scrapeWithAxios(url);
+      apiUrl = `/api/scrapeWithAxios?url=${encodeURIComponent(url)}`;
+    }
+
+    const response = await fetch(apiUrl);
+    const result = await response.json();
+
+    if (response.ok) {
+      return result;
+    } else {
+      console.error("Failed to scrape the product");
+      return null;
     }
   } catch (error) {
     console.error("Error in scrapeAnyProduct:", error);
