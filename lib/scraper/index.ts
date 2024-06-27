@@ -9,7 +9,8 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
 
   try {
     let apiUrl;
-    const baseUrl = "https://my-project-rosy-five.vercel.app/";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
     if (isWorten) {
       apiUrl = `${baseUrl}/api/scrapeWithPuppeteer?url=${encodeURIComponent(
