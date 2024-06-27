@@ -9,10 +9,14 @@ export async function scrapeAnyProduct(url: string): Promise<any> {
 
   try {
     let apiUrl;
+    const baseUrl = "https://my-project-rosy-five.vercel.app/";
+
     if (isWorten) {
-      apiUrl = `/api/scrapeWithPuppeteer?url=${encodeURIComponent(url)}`;
+      apiUrl = `${baseUrl}/api/scrapeWithPuppeteer?url=${encodeURIComponent(
+        url
+      )}`;
     } else {
-      apiUrl = `/api/scrapeWithAxios?url=${encodeURIComponent(url)}`;
+      apiUrl = `${baseUrl}/api/scrapeWithAxios?url=${encodeURIComponent(url)}`;
     }
 
     const response = await fetch(apiUrl);
