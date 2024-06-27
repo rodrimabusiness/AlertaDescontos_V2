@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   try {
     const result = await scrapeWithPuppeteer(url);
     if (result) {
+      console.log("Scraped Product Data:", result);
       return NextResponse.json(result, { status: 200 });
     } else {
       return NextResponse.json(
